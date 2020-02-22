@@ -1,3 +1,5 @@
+This is a transparent background version forked from the original one, and I edited the font to "pannetje_10", you can download this font from other site.
+这是从原版fork来的透明背景版本，我还修改了字体成“pannetje_10”，你能从其他网站下载到这个字体。
 # percentage
 
 ![](https://raw.githubusercontent.com/kas/percentage/master/percentage.png)
