@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
@@ -24,12 +25,12 @@ namespace percentage
             notifyIcon = new NotifyIcon();
 
             // initialize contextMenu
-            contextMenu.MenuItems.AddRange(new MenuItem[] { menuItem });
+            contextMenu.MenuItems.AddRange(new[] { menuItem });
 
             // initialize menuItem
             menuItem.Index = 0;
-            menuItem.Text = "E&xit";
-            menuItem.Click += new System.EventHandler(menuItem_Click);
+            menuItem.Text = @"E&xit";
+            menuItem.Click += menuItem_Click;
 
             notifyIcon.ContextMenu = contextMenu;
 
@@ -38,25 +39,25 @@ namespace percentage
             notifyIcon.Visible = true;
 
             Timer timer = new Timer();
-            timer.Tick += new EventHandler(timer_Tick);
-            timer.Interval = 1000; // in miliseconds
+            timer.Tick += timer_Tick;
+            timer.Interval = 1000; // in milliseconds
             timer.Start();
         }
 
         private void timer_Tick(object sender, EventArgs e)
         {
             PowerStatus powerStatus = SystemInformation.PowerStatus;
-            batteryPercentage = (powerStatus.BatteryLifePercent * 100).ToString();
+            batteryPercentage = (powerStatus.BatteryLifePercent * 100).ToString(CultureInfo.InvariantCulture);
 
             using (Bitmap bitmap = new Bitmap(DrawText(batteryPercentage, new Font(iconFont, iconFontSize), Color.White, Color.Transparent)))
             {
-                System.IntPtr intPtr = bitmap.GetHicon();
+                IntPtr intPtr = bitmap.GetHicon();
                 try
                 {
                     using (Icon icon = Icon.FromHandle(intPtr))
                     {
                         notifyIcon.Icon = icon;
-                        notifyIcon.Text = batteryPercentage + "%";
+                        notifyIcon.Text = batteryPercentage + @"%";
                     }
                 }
                 finally
@@ -73,7 +74,7 @@ namespace percentage
             Application.Exit();
         }
 
-        private Image DrawText(String text, Font font, Color textColor, Color backColor)
+        private Image DrawText(string text, Font font, Color textColor, Color backColor)
         {
             var textSize = GetImageSize(text, font);
             Image image = new Bitmap((int) textSize.Width, (int) textSize.Height);
