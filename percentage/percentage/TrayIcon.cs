@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Text;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using percentage.Properties;
 
 namespace percentage
 {
@@ -11,14 +13,17 @@ namespace percentage
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         static extern bool DestroyIcon(IntPtr handle);
 
-        private const string iconFont = "pannetje_10";
         private const int iconFontSize = 8;
 
         private string batteryPercentage;
         private NotifyIcon notifyIcon;
 
+        private PrivateFontCollection pfc = new PrivateFontCollection();
+
         public TrayIcon()
         {
+            LoadEmbeddedFont();
+
             ContextMenu contextMenu = new ContextMenu();
             MenuItem menuItem = new MenuItem();
 
@@ -49,7 +54,7 @@ namespace percentage
             PowerStatus powerStatus = SystemInformation.PowerStatus;
             batteryPercentage = (powerStatus.BatteryLifePercent * 100).ToString(CultureInfo.InvariantCulture);
 
-            using (Bitmap bitmap = new Bitmap(DrawText(batteryPercentage, new Font(iconFont, iconFontSize), Color.White, Color.Transparent)))
+            using (Bitmap bitmap = new Bitmap(DrawText(batteryPercentage, new Font(pfc.Families[0], iconFontSize), Color.White, Color.Transparent)))
             {
                 IntPtr intPtr = bitmap.GetHicon();
                 try
@@ -77,7 +82,7 @@ namespace percentage
         private Image DrawText(string text, Font font, Color textColor, Color backColor)
         {
             var textSize = GetImageSize(text, font);
-            Image image = new Bitmap((int) textSize.Width, (int) textSize.Height);
+            Image image = new Bitmap((int)textSize.Width, (int)textSize.Height);
             using (Graphics graphics = Graphics.FromImage(image))
             {
                 // paint the background
@@ -93,6 +98,15 @@ namespace percentage
             }
 
             return image;
+        }
+
+        private void LoadEmbeddedFont()
+        {
+            var fontBytes = Resources.PANNETJE;
+            var fontData = Marshal.AllocCoTaskMem(fontBytes.Length);
+            Marshal.Copy(fontBytes, 0, fontData, fontBytes.Length);
+            pfc.AddMemoryFont(fontData, fontBytes.Length);
+            Marshal.FreeCoTaskMem(fontData);
         }
 
         private static SizeF GetImageSize(string text, Font font)
