@@ -13,7 +13,7 @@ namespace percentage
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         static extern bool DestroyIcon(IntPtr handle);
 
-        private const int iconFontSize = 8;
+        private const int iconFontSize = 12;
 
         private string batteryPercentage;
         private NotifyIcon notifyIcon;
@@ -91,7 +91,7 @@ namespace percentage
                 // create a brush for the text
                 using (Brush textBrush = new SolidBrush(textColor))
                 {
-                    graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+                    graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
                     graphics.DrawString(text, font, textBrush, 0, 0);
                     graphics.Save();
                 }
