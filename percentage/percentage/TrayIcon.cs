@@ -25,17 +25,18 @@ namespace percentage
             LoadEmbeddedFont();
 
             ContextMenu contextMenu = new ContextMenu();
-            MenuItem menuItem = new MenuItem();
 
             notifyIcon = new NotifyIcon();
 
             // initialize contextMenu
-            contextMenu.MenuItems.AddRange(new[] { menuItem });
-
-            // initialize menuItem
-            menuItem.Index = 0;
-            menuItem.Text = @"E&xit";
-            menuItem.Click += menuItem_Click;
+            contextMenu.MenuItems.AddRange(new[]
+            {
+                new MenuItem("&AutoStart", autoStartMenuItem_Click)
+                {
+                    Checked = SystemConfig.CheckIsAutoStart()
+                },
+                new MenuItem("E&xit", exitMenuItem_Click),
+            });
 
             notifyIcon.ContextMenu = contextMenu;
 
@@ -72,11 +73,18 @@ namespace percentage
             }
         }
 
-        private void menuItem_Click(object sender, EventArgs e)
+        private void exitMenuItem_Click(object sender, EventArgs e)
         {
             notifyIcon.Visible = false;
             notifyIcon.Dispose();
             Application.Exit();
+        }
+
+        private void autoStartMenuItem_Click(object sender, EventArgs e)
+        {
+            var menu = (MenuItem)sender;
+            menu.Checked = !menu.Checked;
+            SystemConfig.SetAutoStart(menu.Checked);
         }
 
         private Image DrawText(string text, Font font, Color textColor, Color backColor)
